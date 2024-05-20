@@ -142,7 +142,7 @@ This project concerns the task of detecting Personally Identifiable Information 
 
 Microsoft's Presidio SDK \cite{Presidio} has established itself as the default choice for industry practitioners for the task of detecting PII, irrespective of the domain (see, for example, \citealt{AzizStraiton2023PIIDetection}). This choice is especially true since Presidio's recent integration with popular \href{https://python.langchain.com/docs/guides/productionization/safety/presidio_data_anonymization/}{practitioner tools such as LangChain}.
 
-In this project, I show that a Longformer model \cite{abs-2004-05150} fine-tuned on a high-quality, human-annotated, domain-specific dataset yields considerable outperformance in the identification of PII ($F_5 = 0.831$) over a Presidio benchmark ($F_5 = 0.735$).
+This project shows that a Longformer model \cite{abs-2004-05150} fine-tuned on a high-quality, human-annotated, domain-specific dataset yields considerable outperformance in the identification of PII ($F_5 = 0.831$) over the Presidio benchmark ($F_5 = 0.735$).
 
 Furthermore, I show that synthetically generated data can be highly effective in supplementing a train set to bolster overall performance ($F_5 = 0.936$).
 
@@ -154,7 +154,7 @@ I conclude by discussing potential directions for further research and novel ind
 
 \section{Prior literature}
 
-The main problem the related published papers I assesed are trying to solve is how to use a corpus containing sensitive data for machine learning and downstream NLP tasks while protecting privacy. This is an important problem because:
+The main problem addressed by the related published papers I assessed is how to use a corpus containing sensitive data for machine learning and downstream NLP tasks while protecting privacy. This is an important problem because:
 
 \begin{itemize}
 \item Clinical text, for example, contains a wealth of valuable information that can be used to train machine-learning models for various healthcare applications. However, this data also contains sensitive personal information about patients that must be kept private.
@@ -162,9 +162,9 @@ The main problem the related published papers I assesed are trying to solve is h
 \item At the same time, over-zealous de-identification can destroy the utility of the data for machine learning. It is important to advance methods that protect privacy while preserving as much useful information as possible.
 \end{itemize}
 
-Since around 2020 the machine learning literature been unanimous in transformers as the baseline for identifying PII in domain-specific corpora, irrespective of the domain or structure of the underlying text.
+Since around 2020 the machine learning literature been unanimous in using transformers as the baseline for identifying PII in domain-specific corpora, irrespective of the domain or structure of the underlying text.
 
-The domain of the underlying corpora varies across the related published papers I assesed. For example, while \citealt{hathurusinghe-etal-2021-privacy} and \citealt{vakili-etal-2022-downstream} focus on the medical domain, \citealt{pilan-etal-2022-text} focus on legal cases, and \citealt{vanderplas2022detecting} on code.
+The domain of the underlying corpora varies across the related published papers I assessed. For example, while \citealt{hathurusinghe-etal-2021-privacy} and \citealt{vakili-etal-2022-downstream} focus on the medical domain, \citealt{pilan-etal-2022-text} focus on legal cases, and \citealt{vanderplas2022detecting} on code.
 
 \citealt{pilan-etal-2022-text} is the key paper for the intrinsic evaluation of text anonymization methods. The paper presents the Text Anonymization Benchmark (TAB), an annotated corpus and associated set of evaluation metrics designed to assess the performance of text anonymization methods. 
 
@@ -312,7 +312,7 @@ And \Figlink{fig:label_distribution_synth} shows a far more balanced distributio
 \section{Model}
 
 \subsection{High-level overview}
-The Longformer \cite{abs-2004-05150} is a BERT-style transformer model designed to efficiently process long documents using a combination of sliding window local attention and global attention. It is built on top of the RoBERTa checkpoint and was pre-trained on long documents using a masked language modeling objective. \citealt{pilan-etal-2022-text} showed it is a strong base model to use for the task of identifying PII.
+The Longformer \cite{abs-2004-05150} is a BERT-style transformer designed to efficiently process long documents using a combination of sliding window local attention and global attention. It is built on top of the RoBERTa checkpoint and was pre-trained on long documents using a masked language modeling objective. \citealt{pilan-etal-2022-text} showed it is a strong base model to use for the task of identifying PII.
 
 The full architecture of the model used for this paper's experiments:
 
@@ -538,27 +538,18 @@ Interestingly, Presidio achieves a near-perfect $F_5$ score of 0.987 for \texttt
 \subsection{Improvements and further research}
 
 \begin{itemize}
-
 \item One of the most surprising and interesting results of the experiements was the utility of synthetic data for significantly bolstering the performance of the Longformer model, particularly for categories with very few examples in the original train set. For instance, the $F_5$ score for \texttt{PHONE\_NUM} improved from 0.000 in \texttt{Lf(O)} to 1.000 in \texttt{Lf(O+S)}. Even for categories with relatively abundant examples, such as \texttt{NAME\_STUDENT}, the $F_5$ score increased by 0.065 with the addition of synthetic data. These findings suggest that the performance of the PII detection model could be further improved by conducting a more in-depth analysis of the train set structure and adopting a more systematic approach to generating fake PII sets and essay generation prompts. It would be interesting to explore the extent to which the original train set could be replaced by generated synthetic data without compromising the model's performance.
-
 \item To enhance the model's performance on categories with limited examples, such as \texttt{ID\_NUM} and \texttt{USERNAME}, a fine-grained analysis of the existing examples in the train set should be conducted.
-
 \item For real-world PII detection pipelines, a hybrid approach that combines the strengths of rule-based mechanisms, such as those employed by Presidio, with the fine-tuned Longformer model could yield promising results. Rule-based techniques can efficiently capture well-defined patterns and formats, while the Longformer model excels at understanding the nuanced context and identifying PII that may not adhere to strict rules. By leveraging the complementary strengths of these two approaches, a more comprehensive and robust PII detection system could be developed. 
-
 \item To strengthen the Presidio benchmark, future work could explore extending its default recognizers with custom ones tailored to specific contexts, as demonstrated by \citealt{AzizStraiton2023PIIDetection} in their work on identifying Australian-specific PII types. In the context of this project, custom recognizers could be developed to better capture PII patterns specific to the educational domain or the United States, such as student ID formats, school-related abbreviations, or state-specific information. By incorporating these domain-specific recognizers, the Presidio benchmark would become a more challenging and relevant baseline for evaluating the performance of the Longformer model.
-
 \end{itemize}
 
 \section*{Known Project Limitations}
 
 \begin{itemize}
-
 \item The corpus comprises essays submitted in the context of a MOOC hosted by a university in the United States. We can assume most students are based in the United States. This means the models may not generalize well to identifying PII with local context outside the United States, such as identifying non-US phone number formats, addresses, or region-specific identification numbers.
-
 \item The performance of the models may be sensitive to variations in PII formats or representations. For example, if a student writes their phone number in an unconventional way ("five-five-five, one-two-three, four-five-six-seven"), the model might not recognize it as a phone number. Robustness to such variations is an important consideration for practical applications.
-
 \item The performance of the models on multilingual essays or essays containing non-English PII has not been evaluated.
-
 \end{itemize}
 
 \section*{Authorship Statement}
