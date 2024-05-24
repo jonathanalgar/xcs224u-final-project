@@ -152,6 +152,18 @@ I conclude by discussing potential directions for further research and novel ind
 
 \end{abstract}
 
+\section{Hypothesis}
+
+Microsoft's Presidio SDK \cite{Presidio} has established itself as the default choice for industry practitioners for the task of detecting PII, irrespective of the domain (see, for example, \citealt{AzizStraiton2023PIIDetection}). This choice is especially true since Presidio's recent integration with popular \href{https://python.langchain.com/docs/guides/productionization/safety/presidio_data_anonymization/}{practitioner tools such as LangChain}. The recognition engine uses a combination of techniques to detect PII entities: regular expressions, NER using spaCy, and predefined context words.
+
+I will apply the SDK to the test set of a novel domain-specific dataset: student essays.
+
+I hypothesize that the benchmark will be significantly outperformed, as measured by standard classifier metrics, by a custom model fine-tuned on the train set of a high-quality, human-annotated, domain-specific dataset.
+
+If the primary hypothesis holds, it would add a further data point in support of the conclusion of \citealt{Chen2015ASO} (summarized by \citealt{hathurusinghe-etal-2021-privacy}) that for the training of a robust PII recognizer, a customized domain-specific annotated dataset is needed.
+
+The secondary hypothesis is that the primary hypothesis holds principally because of \textit{in-context PII}, which is highly domain-specific.
+
 \section{Prior literature}
 
 The main problem addressed by the related published papers I assessed is how to use a corpus containing sensitive data for machine learning and downstream NLP tasks while protecting privacy. This is an important problem because:
