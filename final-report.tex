@@ -162,7 +162,7 @@ I hypothesize that the benchmark will be significantly outperformed, as measured
 
 If the primary hypothesis holds, it would add a further data point in support of the conclusion of \citealt{Chen2015ASO} (summarized by \citealt{hathurusinghe-etal-2021-privacy}) that for the training of a robust PII recognizer, a customized domain-specific annotated dataset is needed.
 
-The secondary hypothesis is that the primary hypothesis holds principally because of \textit{in-context PII}, which is highly domain-specific.
+The secondary hypothesis is that the primary hypothesis holds principally because of \textit{in-context} PII, which is highly domain-specific.
 
 \section{Prior literature}
 
@@ -184,7 +184,7 @@ The authors found a Longformer model fine-tuned on the TAB train set achieved su
 
 \section{Data}
 
-The data used for the experiements in this paper is a corpus of 22,000 academic essays written by students enrolled in a Massive Open Online Course (MOOC) at Vanderbilt University in response to a single question.
+The data used for the experiments in this paper is a corpus of 22,000 academic essays written by students enrolled in a Massive Open Online Course (MOOC) at Vanderbilt University in response to a single question.
 
 This novel data was distributed in the context of a Kaggle competition \cite{pii-detection-removal-from-educational-data}. The publicly distributed version of the dataset skews $70\%$ to the \textit{unannotated} test set versus $30\%$ annotated for train and dev. For the experiment I advance in this project on the publicly distributed version of the data, I will focus on the $30\%$ of annotated essays and split these $6,807$ samples $80\%$ for train, $10\%$ for dev, and $10\%$ test.
 
@@ -386,7 +386,7 @@ where $y_{ij}$ is the true BIO label for token $x_i$ and BIO label $j$, and $p_{
 
 \subsection{Notes on Longformer and PII}
 
-The Longerformer's local attention mechanism is confined to small windows surrounding each token. By attending to the local context, the model remains responsive to the syntactic structure of the text—essential for accurately identifying PII entities such as student names, often contextually dependent on nearby words.
+The Longformer's local attention mechanism is confined to small windows surrounding each token. By attending to the local context, the model remains responsive to the syntactic structure of the text—essential for accurately identifying PII entities such as student names, often contextually dependent on nearby words.
 
 On the other hand, global attention allows select tokens to attend to the entire text, enabling the model to integrate broader narrative contexts. This is particularly useful in essays where references to PII can be subtly woven into the text or contextualized across different sections of the same essay. By maintaining an awareness of the entire essay, the Longformer can better understand the relevance and implications of specific tokens, enhancing its ability to discern PII from similarly structured non-PII text.
 
@@ -541,7 +541,7 @@ See \Tablink{tab:precision_recall_f5} for granular results.
 
 The metrics in \Tablink{tab:f5_values} show that the \texttt{Lf(O+S)} model achieves the highest overall $F_5$ score of 0.936, substantially outperforming both the Presidio benchmark ($F_5 = 0.735$) and the \texttt{Lf(O)} model ($F_5 = 0.831$).
 
-\hl{This validates the primary hypothesis that the benchmark [Presido] will be significantly outperformed, as measured by standard classifier metrics [$F_5$], by a custom model fine-tuned on the train set of a high-quality, human-annotated, domain-specific dataset [\texttt{Lf(O)}]}.
+\hl{This validates the primary hypothesis that the benchmark [Presidio] will be significantly outperformed, as measured by standard classifier metrics [$F_5$], by a custom model fine-tuned on the train set of a high-quality, human-annotated, domain-specific dataset [\texttt{Lf(O)}]}.
 
 Looking at the category-level metrics in \Tablink{tab:precision_recall_f5} provides further insight. The \texttt{Lf(O+S)} model achieves near-perfect $F_5$ scores above 0.95 for the most common categories of PII in original train set \texttt{NAME\_STUDENT} and \texttt{URL\_PERSONAL}. We clearly see \( F_5(\texttt{Lf(O+S)}) > F_5(\texttt{Lf(O)}) \gg F_5(\text{Presidio}) \) for these catagories. \hl{This supports the secondary hypothesis that the primary hypothesis holds principally because of \textit{in-context} PII, which is highly domain-specific.} Simply put, the more examples of this \textit{in-context} PII category that are learned—either from the original test set or the synthetic data—the better the fine-tuned Longformer model performs.
 
@@ -550,7 +550,7 @@ Interestingly, Presidio achieves a near-perfect $F_5$ score of 0.987 for \texttt
 \subsection{Improvements and further research}
 
 \begin{itemize}
-\item One of the most surprising and interesting results of the experiements was the utility of synthetic data for significantly bolstering the performance of the Longformer model, particularly for categories with very few examples in the original train set. For instance, the $F_5$ score for \texttt{PHONE\_NUM} improved from 0.000 in \texttt{Lf(O)} to 1.000 in \texttt{Lf(O+S)}. Even for categories with relatively abundant examples, such as \texttt{NAME\_STUDENT}, the $F_5$ score increased by 0.065 with the addition of synthetic data. These findings suggest that the performance of the PII detection model could be further improved by conducting a more in-depth analysis of the train set structure and adopting a more systematic approach to generating fake PII sets and essay generation prompts. It would be interesting to explore the extent to which the original train set could be replaced by generated synthetic data without compromising the model's performance.
+\item One of the most surprising and interesting results of the experiments was the utility of synthetic data for significantly bolstering the performance of the Longformer model, particularly for categories with very few examples in the original train set. For instance, the $F_5$ score for \texttt{PHONE\_NUM} improved from 0.000 in \texttt{Lf(O)} to 1.000 in \texttt{Lf(O+S)}. Even for categories with relatively abundant examples, such as \texttt{NAME\_STUDENT}, the $F_5$ score increased by 0.065 with the addition of synthetic data. These findings suggest that the performance of the PII detection model could be further improved by conducting a more in-depth analysis of the train set structure and adopting a more systematic approach to generating fake PII sets and essay generation prompts. It would be interesting to explore the extent to which the original train set could be replaced by generated synthetic data without compromising the model's performance.
 \item To enhance the model's performance on categories with limited examples, such as \texttt{ID\_NUM} and \texttt{USERNAME}, a fine-grained analysis of the existing examples in the train set should be conducted.
 \item For real-world PII detection pipelines, a hybrid approach that combines the strengths of rule-based mechanisms, such as those employed by Presidio, with the fine-tuned Longformer model could yield promising results. Rule-based techniques can efficiently capture well-defined patterns and formats, while the Longformer model excels at understanding the nuanced context and identifying PII that may not adhere to strict rules. By leveraging the complementary strengths of these two approaches, a more comprehensive and robust PII detection system could be developed. 
 \item To strengthen the Presidio benchmark, future work could explore extending its default recognizers with custom ones tailored to specific contexts, as demonstrated by \citealt{AzizStraiton2023PIIDetection} in their work on identifying Australian-specific PII types. In the context of this project, custom recognizers could be developed to better capture PII patterns specific to the educational domain or the United States, such as student ID formats, school-related abbreviations, or state-specific information. By incorporating these domain-specific recognizers, the Presidio benchmark would become a more challenging and relevant baseline for evaluating the performance of the Longformer model.
